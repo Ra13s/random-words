@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Random Words App</title>
+  <style>
+html, body, .container-fluid {
+  height: 100%;
+  background-color: #111;
+}
+
+body {
+  background-color:#2D3047;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+#word-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: black;
+  height: 100vh;
+}
+
+#word {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);	
+  background-color: #419D78;
+  color: #fff;
+  font-size: 6vw;
+  text-align: center;
+  padding: 40px 60px 40px 60px;
+}
+
+label, input[type="range"] {
+  color: white;
+  display: block;
+  margin: 20px;
+}
+
+input[type="range"], select {
+  background-color: #4c4f63;
+  color: white;
+  border: none;
+}
+
+#timer {
+  color: #fff;	
+  position: absolute;
+  left: 50%;
+  top: 80%;
+  transform: translate(-50%, -50%);	
+  font-size: 2.5vw;
+  padding: 20px;
+}
+
+#settings {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 10px;
+  background-color: #2D3047;
+  transition: all 0.3s ease-out;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.1em;  
+  opacity: 0;
+}
+
+#settings:hover {
+  transform: translateY(0);
+  opacity: 1;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+#language-select,
+#speed-slider {
+  margin: 0 10px;
+}
+
+#language-select {
+  width: 150px;
+  font-size: 1.1em;   
+}
+
+#speed-label, #speed-label-seconds, #word-count-label {
+  color: white;
+}
+
+/* Media queries for responsive design */
+@media only screen and (max-width: 768px) {
+  #word {
+    font-size: 12vw;
+    padding: 20px 40px 20px 40px;
+  }
+
+  #timer {
+    font-size: 6vw;
+  }
+
+  #settings {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  #language-select {
+    margin-top: 10px;
+    width: 100%;
+  }
+
+  #speed-slider {
+    margin-top: 10px;
+  }
+
+  label, input[type="range"] {
+    margin: 10px 0;
+  }
+}
+  </style>
+</head>
+<body>
+  <div id="word-container">
+	<span id="word">WORD</span>
+  </div>
+  <div id="timer">0:00</div>
+  
+  <div id="settings">  
+    <label for="language-select">Select Language:</label>
+    <select id="language-select">
+      <option value="eng">English</option>
+      <option value="est">Estonian</option>
+    </select>
+  
+	<label for="word-count-slider">Select Number of Words:</label>
+	<input type="range" id="word-count-slider" min="1" max="4" step="1" value="1">
+	<span id="word-count-label">1</span>  
+  
+    <label for="speed-slider">Select Speed:</label>
+    <input type="range" id="speed-slider" min="1" max="90" step="1" value="25">
+    <span id="speed-label">25</span>  
+	<span id="speed-label-seconds"> seconds</span>  
+	
+  </div>
+  <script src="words.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+  <script>
+	var wordElement = document.getElementById("word");
+	var timerElement = document.getElementById("timer");
+
+	var currentIndex = 0;
+	var words = words_eng; // Default to English words
+	var intervalID = null; // To clear the interval later
+	var timerID = null; // To clear the timer later
+	var duration = 0;
+
+	var languageSelect = document.getElementById("language-select");
+	languageSelect.addEventListener("change", () => {
+	  if (languageSelect.value === "eng") {
+		words = words_eng;
+	  } else if (languageSelect.value === "est") {
+		words = words_est;
+	  }
+	  currentIndex = 0; // Reset the index when the language changes
+	  clearInterval(intervalID); // Clear the previous interval if it exists
+	  clearInterval(timerID); // Clear the previous timer if it exists
+	  displayWord();
+	});
+
+	var speedSlider = document.getElementById("speed-slider");
+	var wordCountSlider = document.getElementById("word-count-slider");
+	var speedLabel = document.getElementById("speed-label");
+	var wordCountLabel = document.getElementById("word-count-label");
+	speedLabel.innerHTML = speedSlider.value;
+	wordCountLabel.innerHTML = wordCountSlider.value;
+
+	speedSlider.addEventListener("input", () => updateTimeSettings());
+	wordCountSlider.addEventListener("input", () => displayWord());
+
+	function updateTimeSettings() {
+	  if (intervalID !== null) {
+		clearInterval(intervalID); // Clear the previous interval if it exists
+	  }
+	  if (timerID !== null) {
+		clearInterval(timerID); // Clear the previous timer if it exists
+	  }
+	  duration = parseInt(speedSlider.value);
+	  var newInterval = duration * 1000; // Convert to milliseconds
+	  intervalID = setInterval(displayWord, newInterval);
+	  speedLabel.innerHTML = duration;
+
+	  if (duration == 1) {
+		timerElement.style.display = "none";
+	  } else {
+		timerElement.style.display = "block";
+		resetTimer();
+	  }
+	}
+
+	function resetTimer() {
+	  var secondsLeft = duration;
+	  var formattedTime = moment.utc(moment.duration(secondsLeft, "seconds").asMilliseconds()).format("mm:ss");
+
+	  timerElement.innerHTML = formattedTime;
+	  clearInterval(timerID);
+	  timerID = setInterval(function() {
+		secondsLeft -= 1;
+		formattedTime = moment.utc(moment.duration(secondsLeft, "seconds").asMilliseconds()).format("mm:ss");
+		timerElement.innerHTML = formattedTime;
+		if (secondsLeft <= 0) {
+		  clearInterval(timerID);
+		}
+	  }, 1000);
+	}
+
+	function displayWord() {
+	  var count = parseInt(wordCountSlider.value);
+	  var wordsToDisplay = [];
+
+	  for (var i = 0; i < count; i++) {
+		var randomIndex = Math.floor(Math.random() * words.length);
+		wordsToDisplay.push(words[randomIndex]);
+	  }
+
+	  wordElement.innerHTML = wordsToDisplay.join(" ");
+	  wordCountLabel.innerHTML = count;
+	  resetTimer();
+	}	
+
+	displayWord(); // Display the first word immediately
+
+	duration = parseInt(speedSlider.value);
+	intervalID = setInterval(displayWord, duration * 1000); // Display a new word every X seconds
+	resetTimer();
+  </script>
+</body>
+</html>
