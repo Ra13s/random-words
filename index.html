@@ -2,6 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Random Words App</title>
   <style>
 html, body, .container-fluid {
@@ -62,7 +63,6 @@ input[type="range"], select {
   position: fixed;
   top: 0;
   width: 100%;
-  padding: 10px;
   background-color: #2D3047;
   transition: all 0.3s ease-out;
   z-index: 1;
@@ -72,6 +72,7 @@ input[type="range"], select {
   align-items: center;
   font-size: 1.1em;  
   opacity: 0;
+  padding: 10px 0 10px 0;
 }
 
 #settings:hover {
@@ -92,36 +93,68 @@ input[type="range"], select {
 
 #speed-label, #speed-label-seconds, #word-count-label {
   color: white;
+  padding: 0 0 0 5px;
 }
 
 /* Media queries for responsive design */
 @media only screen and (max-width: 768px) {
   #word {
-    font-size: 12vw;
+    font-size: 15vw;
     padding: 20px 40px 20px 40px;
   }
 
   #timer {
-    font-size: 6vw;
+    font-size: 10vw;
   }
 
   #settings {
     flex-direction: column;
-    padding: 20px;
+    align-items: center;
   }
-
+  
   #language-select {
     margin-top: 10px;
-    width: 100%;
   }
 
-  #speed-slider {
-    margin-top: 10px;
+
+  #speed-slider, #word-count-slider  {
+    height: 20px;
+    width: 85%;
+    -webkit-appearance: none;
+    background-color: #4c4f63;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+    border-radius: 10px;
   }
+
+  #speed-slider::-webkit-slider-thumb, #word-count-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 30px;
+    height: 30px;
+    background-color: white;
+    cursor: pointer;
+    border-radius: 50%;
+  }
+
+  #speed-slider::-moz-range-thumb, #word-count-slider::-moz-range-thumb {
+    width: 30px;
+    height: 30px;
+    background-color: white;
+    cursor: pointer;
+    border-radius: 50%;
+  }
+  
 
   label, input[type="range"] {
-    margin: 10px 0;
+    margin: 20px 0 10px 0;
   }
+  
+  #word-count-label, #speed-label, #speed-label-seconds {
+    font-size: 1em;
+  }  
 }
   </style>
 </head>
@@ -137,16 +170,15 @@ input[type="range"], select {
       <option value="eng">English</option>
       <option value="est">Estonian</option>
     </select>
-  
+
 	<label for="word-count-slider">Select Number of Words:</label>
 	<input type="range" id="word-count-slider" min="1" max="4" step="1" value="1">
-	<span id="word-count-label">1</span>  
+	<span id="word-count-label">1</span>
   
     <label for="speed-slider">Select Speed:</label>
     <input type="range" id="speed-slider" min="1" max="90" step="1" value="25">
-    <span id="speed-label">25</span>  
-	<span id="speed-label-seconds"> seconds</span>  
-	
+    <span id="speed-label">25</span>
+	<span id="speed-label-seconds"> seconds</span>
   </div>
   <script src="words.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
