@@ -202,7 +202,10 @@ input[type="range"], select {
 	  currentIndex = 0; // Reset the index when the language changes
 	  clearInterval(intervalID); // Clear the previous interval if it exists
 	  clearInterval(timerID); // Clear the previous timer if it exists
+	  duration = parseInt(speedSlider.value); // Ensure duration is updated
+	  intervalID = setInterval(displayWord, duration * 1000); // Restart word display with new settings
 	  displayWord();
+	  resetTimer(); // Reset and restart the timer
 	});
 
 	var speedSlider = document.getElementById("speed-slider");
