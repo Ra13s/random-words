@@ -183,16 +183,25 @@ input[type="range"], select {
   <script src="words.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
   <script>
-	var wordElement = document.getElementById("word");
-	var timerElement = document.getElementById("timer");
-
 	var currentIndex = 0;
 	var words = words_eng; // Assuming words_eng is defined elsewhere
 	var intervalID = null; // To clear the interval later
 	var timerID = null; // To clear the timer later
 	var duration = 0;
 
+	var wordElement = document.getElementById("word");
+	var timerElement = document.getElementById("timer");
+	var speedSlider = document.getElementById("speed-slider");
+	var wordCountSlider = document.getElementById("word-count-slider");
+	var speedLabel = document.getElementById("speed-label");
+	var wordCountLabel = document.getElementById("word-count-label");
 	var languageSelect = document.getElementById("language-select");
+	
+	speedLabel.innerHTML = speedSlider.value;
+	wordCountLabel.innerHTML = wordCountSlider.value;
+
+	speedSlider.addEventListener("input", () => updateTimeSettings());
+	wordCountSlider.addEventListener("input", () => displayWord());
 	languageSelect.addEventListener("change", () => {
 	  if (languageSelect.value === "eng") {
 		words = words_eng;
@@ -207,16 +216,6 @@ input[type="range"], select {
 	  displayWord();
 	  resetTimer(); // Reset and restart the timer
 	});
-
-	var speedSlider = document.getElementById("speed-slider");
-	var wordCountSlider = document.getElementById("word-count-slider");
-	var speedLabel = document.getElementById("speed-label");
-	var wordCountLabel = document.getElementById("word-count-label");
-	speedLabel.innerHTML = speedSlider.value;
-	wordCountLabel.innerHTML = wordCountSlider.value;
-
-	speedSlider.addEventListener("input", () => updateTimeSettings());
-	wordCountSlider.addEventListener("input", () => displayWord());
 
 	function updateTimeSettings() {
 	  if (intervalID !== null) {
