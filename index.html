@@ -187,7 +187,7 @@ input[type="range"], select {
 	var timerElement = document.getElementById("timer");
 
 	var currentIndex = 0;
-	var words = words_eng; // Default to English words
+	var words = words_eng; // Assuming words_eng is defined elsewhere
 	var intervalID = null; // To clear the interval later
 	var timerID = null; // To clear the timer later
 	var duration = 0;
@@ -270,6 +270,14 @@ input[type="range"], select {
 	duration = parseInt(speedSlider.value);
 	intervalID = setInterval(displayWord, duration * 1000); // Display a new word every X seconds
 	resetTimer();
+
+	// Added code for space bar functionality
+	document.addEventListener('keydown', function(event) {
+	  if (event.keyCode === 32) { // 32 is the key code for the space bar
+		displayWord();
+		event.preventDefault(); // Prevent the default space bar action (scrolling)
+	  }
+	});
   </script>
 </body>
 </html>
